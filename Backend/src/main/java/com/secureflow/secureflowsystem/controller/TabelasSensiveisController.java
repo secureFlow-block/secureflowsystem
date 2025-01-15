@@ -52,7 +52,7 @@ public class TabelasSensiveisController {
     }
 
     @DeleteMapping("/{empresaId}/tabelas/{tabelaId}")
-    public ResponseEntity<Void> buscarTodos(@PathVariable Long empresaId, @PathVariable Long tabelaId) {
+    public ResponseEntity<Void> deletarTabela(@PathVariable Long empresaId, @PathVariable Long tabelaId) {
         service.deletarTabela(empresaId, tabelaId);
         return ResponseEntity.noContent().build();
     }
