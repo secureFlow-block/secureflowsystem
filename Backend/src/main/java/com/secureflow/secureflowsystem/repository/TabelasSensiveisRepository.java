@@ -10,6 +10,8 @@ import java.util.Optional;
 
 public interface TabelasSensiveisRepository extends JpaRepository<TabelasSensiveis, Long> {
 
+    boolean existsByNomeTabela(String nomeTabela);
+
     @Query(value = "SELECT * FROM tabelas_sensiveis WHERE empresa_id = :empresaId", nativeQuery = true)
     List<TabelasSensiveis> buscarTabelasPorEmpresa(@Param("empresaId") Long empresaId);
 
