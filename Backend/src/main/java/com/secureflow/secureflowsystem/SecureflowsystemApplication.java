@@ -21,12 +21,12 @@ public class SecureflowsystemApplication {
 
 	}
 
-	@Bean
-	CommandLineRunner initDatabase(EmpresaRepository empresaRepository) {
-		return args -> {
-			empresaRepository.save(
-					new Empresa(1L, "Empresa1", "1253125dd", LocalDateTime.of(2024, 1, 13, 0, 0)));
-		};
-	}
+//	@Bean
+//	CommandLineRunner initDatabase(EmpresaRepository empresaRepository) {
+//		return args -> {
+//			empresaRepository.save(
+//					new Empresa(1L, "Empresa1", "1253125dd", LocalDateTime.of(2024, 1, 13, 0, 0)));
+//		};
+//	}
 
 }

@@ -22,14 +22,15 @@ public class AdministradoresController {
         return administradorService.getAll();
     }
     @GetMapping("/{id}")
-    public ResponseEntity<AdministradorDTO> getStudentById(@PathVariable Long id){
+    public ResponseEntity<AdministradorDTO> getAdministradorById(@PathVariable Long id){
         return administradorService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
     @PostMapping
-    public Administrador createStudent(@RequestBody Administrador administrador){
-        return administradorService.criarAdminstrador(administrador);
+    public Administrador createAdministrador(@RequestBody Administrador administrador){
+        System.out.println("Print controller "+administrador.getDataCriacao());
+        return administradorService.criarAdministrador(administrador);
     }
 
     @PutMapping
@@ -39,7 +40,7 @@ public class AdministradoresController {
 
     @DeleteMapping("/{id}")
     public void deleteAdministrador(@PathVariable Long id){
-       administradorService.deleteAdmistrador(id);
+       administradorService.deleteAdministrador(id);
     }
 
 }

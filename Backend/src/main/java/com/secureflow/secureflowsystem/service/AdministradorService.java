@@ -6,9 +6,6 @@ import com.secureflow.secureflowsystem.model.Administrador;
 import com.secureflow.secureflowsystem.repository.AdministradorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,8 +15,9 @@ public class AdministradorService {
     @Autowired
     private AdministradorRepository administradorRepository;
 
+
     public List<AdministradorDTO> getAll(){
-        return administradorRepository.findAll().stream()
+        return this.administradorRepository.findAll().stream()
                 .map(administrador -> new AdministradorDTO(
                         administrador.getAdminId(),
                         administrador.getNome(),
@@ -59,10 +57,10 @@ public class AdministradorService {
                 });
     }
 
-    public Administrador criarAdminstrador(Administrador administrador) {
+    public Administrador criarAdministrador(Administrador administrador) {
         return administradorRepository.save(administrador);
     }
-    public void deleteAdmistrador(Long adminId){
+    public void deleteAdministrador(Long adminId){
         administradorRepository.deleteById(adminId);
     }
 }

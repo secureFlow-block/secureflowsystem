@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,16 +12,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "ADMINISTRADOR")
 public class Administrador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="ADMIN_ID")
     private Long adminId;
-    @Column(nullable = false, unique = true)
+    @Column(name="NOME",nullable = false)
     private String nome;
-    @Column(nullable = false, unique = true)
+    @Column(name="EMAIL",nullable = false, unique = true)
     private String email;
-    @Column(nullable = false)
+    @Column(name="SENHA",nullable = false)
     private String senha;
+    @Column(name= "DATA_CRIACAO",nullable = false)
     private LocalDateTime dataCriacao=LocalDateTime.now();
 
 }
