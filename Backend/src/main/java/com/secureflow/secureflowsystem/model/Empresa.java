@@ -1,6 +1,11 @@
 package com.secureflow.secureflowsystem.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -9,21 +14,18 @@ public class Empresa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long empresaId;
 
-    @Column(nullable = false, unique = true)
+    @NotNull(message = "O nome é obrigatório")
+    @Size(min = 3, max = 100, message = "O nome deve ter entre 3 e 100 caracteres")
     private String nome;
 
-    @Column(nullable = false, unique = true, length = 14)
+    @NotNull(message = "O CNPJ é obrigatório")
+    @Pattern(regexp = "\\d{14}", message = "O CNPJ deve conter exatamente 14 números")
     private String cnpj;
 
     private LocalDateTime dataCadastro = LocalDateTime.now();
 
-
-
-    
     public Empresa() {
     }
-
-    
 
     public Empresa(Long empresaId, String nome, String cnpj, LocalDateTime dataCadastro) {
         this.empresaId = empresaId;
@@ -31,8 +33,6 @@ public class Empresa {
         this.cnpj = cnpj;
         this.dataCadastro = dataCadastro;
     }
-
-
 
     public Long getEmpresaId() {
         return empresaId;
