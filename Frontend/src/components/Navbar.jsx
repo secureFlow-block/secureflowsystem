@@ -16,6 +16,7 @@ const NavBar = () => {
   const navLinksRef = useRef(null);
   const hamburgerButtonRef = useRef(null);
   const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -132,41 +133,55 @@ const NavBar = () => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      setSuccessMessage(isLogin ? "Login efetuado com sucesso!" : "Cadastro realizado com sucesso!");
+      setIsLoading(true); // Ativa o loader
 
-      // Limpa o formulário
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
+      setTimeout(() => {
+        setIsLoading(false); // Desativa o loader
+        setSuccessMessage(isLogin ? "Login efetuado com sucesso!" : "Cadastro realizado com sucesso!");
 
-      if (!isLogin) {
-        // Se for cadastro, alterna para tela de login
-        setTimeout(() => {
-          setIsModalOpen(false); // Fecha o modal
-          setIsLogin(true); // Altera para login
-          setIsModalOpen(true); // Reabre no modo login
-          setSuccessMessage(""); // Limpa a mensagem
-        }, 2000); // Pequena transição
-      } else {
-        // Para login, apenas limpa o modal e mensagem
-        setTimeout(() => {
-          setSuccessMessage("");
-          setIsModalOpen(false);
-        }, 3000);
-      }
+        // Limpa o formulário
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+
+        if (!isLogin) {
+          // Se for cadastro, alterna para tela de login
+          setTimeout(() => {
+            setIsModalOpen(false); // Fecha o modal
+            setIsLogin(true); // Altera para login
+            setIsModalOpen(true); // Reabre no modo login
+            setSuccessMessage(""); // Limpa a mensagem
+          }, 2000); // Pequena transição
+        } else {
+          // Para login, apenas limpa o modal e mensagem
+          setTimeout(() => {
+            setSuccessMessage("");
+            setIsModalOpen(false);
+          }, 3000);
+        }
+      }, 3000);
     }
   };
 
   //Funçã para controlar o botão de mostrar/esconde senha
-  const togglePasswordVisibility=(field)=>{
-    setShowPassword((prev)=>({
+  const togglePasswordVisibility = (field) => {
+    setShowPassword((prev) => ({
       ...prev,
-      [field]:!prev[field],
-    }))
-  }
+      [field]: !prev[field],
+    }));
+  };
+
+  // Função para lidar com o clique no botão
+  const handleButtonClick = () => {
+    setIsLoading(true); // Ativa o loader
+    setTimeout(() => {
+      setIsLoading(false); // Desativa o loader após 3 segundos
+      setIsModalOpen(true); // Abre o modal (ou realiza outra ação)
+    }, 3000);
+  };
 
   return (
     <>
@@ -230,10 +245,10 @@ const NavBar = () => {
 
       {isModalOpen && (
         <div
-        className={`fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 transition-opacity duration-500 ${
-          isModalOpen ? "opacity-100 fade-in-down" : "opacity-0 fade-out-up"
-        }`}
-      >
+          className={`fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 transition-opacity duration-500 ${
+            isModalOpen ? "opacity-100 fade-in-down" : "opacity-0 fade-out-up"
+          }`}
+        >
           <div
             ref={modalRef}
             className="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4 md:mx-0 overflow-hidden flex flex-col md:flex-row relative animate-fadeInScal"
@@ -342,9 +357,10 @@ const NavBar = () => {
 
                   <button
                     type="submit"
-                    className="w-full mt-6 py-2 px-4 bg-purple-600 text-white text-lg font-semibold rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+                    className="w-full py-2 px-4 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition relative flex items-center justify-center"
+                    disabled={isLoading}
                   >
-                    {isLogin ? "Entrar" : "Cadastrar"}
+                    {isLoading ? <span className="loader"></span> /* Loader visível */ : isLogin ? "Entrar" : "Cadastrar"}
                   </button>
                 </form>
 
