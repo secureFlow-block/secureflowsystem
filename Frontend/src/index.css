@@ -72,6 +72,7 @@ html {
   scroll-padding-top: 6rem;
 }
 
+/* Animação do Títulodo Hero */
 .heading {
   /* color: var(--light); */
   text-align: center;
@@ -133,4 +134,42 @@ html {
 /* Estilo de hover */
 .scroll-top-button:hover {
   background: #10b981;
+}
+
+/* Sombra do Header */
+header.fixed{
+  box-shadow: 1px 1px 5px #fff, -1px -1px 5px #000;
+}
+
+/* Efeito de surgimento do Modal */
+
+/* Animação de surgimento de cima para baixo */
+.fade-in-down {
+  animation: fadeInDown 0.8s forwards;
+}
+
+.fade-out-up {
+  animation: fadeOutUp 0.8s forwards;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-50px); /* Começa acima */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0); /* Volta para a posição original */
+  }
+}
+
+@keyframes fadeOutUp {
+  from {
+    opacity: 1;
+    transform: translateY(0); /* Posição original */
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-50px); /* Sobe novamente */
+  }
 }

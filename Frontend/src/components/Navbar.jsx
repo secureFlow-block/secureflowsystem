@@ -5,9 +5,12 @@ import screenLogin from "../assets/screen-login.svg";
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState({
+    password: false,
+    confirmPassword: false,
+  });
   const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [errors, setErrors] = useState({});
   const modalRef = useRef(null);
   const navLinksRef = useRef(null);
@@ -15,33 +18,53 @@ const NavBar = () => {
   const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
-    // Função para verificar se o clique foi fora do modal ou do menu de navegação
     const handleOutsideClick = (event) => {
-      // Verifica se o clique foi fora do modal
+      // Fechar o modal
       if (modalRef.current && !modalRef.current.contains(event.target) && isModalOpen) {
-        setIsModalOpen(false); // Fecha o modal se o clique for fora dele
+        setIsModalOpen(false);
       }
 
-      // Verifica se o clique foi fora do menu de navegação e do botão hamburger
-      if (navLinksRef.current && !navLinksRef.current.contains(event.target) && !hamburgerButtonRef.current.contains(event.target) && isOpen) {
-        setIsOpen(false); // Fecha o menu de navegação se o clique for fora dele
+      // Fechar o menu de navegação (hambúrguer)
+      if (
+        navLinksRef.current &&
+        !navLinksRef.current.contains(event.target) &&
+        hamburgerButtonRef.current &&
+        !hamburgerButtonRef.current.contains(event.target) &&
+        isOpen
+      ) {
+        setIsOpen(false);
       }
     };
 
-    // Adiciona um event listener para detectar cliques fora dos elementos
+    const handleScroll = () => {
+      // Fecha o menu ao rolar
+      if (isOpen) {
+        setIsOpen(false);
+      }
+    };
+
+    // Adiciona eventos de clique fora e rolagem
     document.addEventListener("mousedown", handleOutsideClick);
+    window.addEventListener("scroll", handleScroll);
 
-    // Limpeza do event listener quando o componente for desmontado ou as dependências mudarem
     return () => {
+      // Remove eventos ao desmontar
       document.removeEventListener("mousedown", handleOutsideClick);
+      window.removeEventListener("scroll", handleScroll);
     };
-  }, [isOpen, isModalOpen]); // Dependências: reexecuta sempre que isOpen ou isModalOpen mudar
+  }, [isOpen, isModalOpen]);
+  // Dependências: reexecuta sempre que isOpen ou isModalOpen mudar
 
   // Função para alternar entre os estados de login e cadastro
   const handleToggleForm = () => {
     setIsLogin(!isLogin); // Alterna entre login e cadastro
     setErrors({}); // Limpa os erros de validação
-    setFormData({ name: "", email: "", password: "" }); // Limpa os dados do formulário
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    }); // Limpa os dados do formulário
   };
 
   // Expressão regular para validar o formato do e-mail
@@ -70,47 +93,80 @@ const NavBar = () => {
     if (id === "password" && value.length >= 8) {
       setErrors((prev) => ({ ...prev, password: null })); // Limpa o erro se válido
     }
+
+    // Validação do campo 'confirmPassword': verifica se a senha e a confirmação de senha são iguais
+    if (id === "confirmPassword") {
+      if (value !== formData.password) {
+        setErrors((prev) => ({
+          ...prev,
+          confirmPassword: "As senhas não coincidem.",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, confirmPassword: null }));
+      }
+    }
   };
 
   // Função para validar o formulário antes de envio
   const validateForm = (e) => {
-    e.preventDefault(); // Evita o envio do formulário se houver erros
-    const newErrors = {}; // Objeto para armazenar os erros de validação
+    e.preventDefault();
+    const newErrors = {};
 
-    // Verifica se o nome tem pelo menos 5 caracteres
-    if (!isLogin && formData.name.length < 5) {
+    // Validações para campos
+    if (!isLogin && (!formData.name || formData.name.length < 5)) {
       newErrors.name = "O nome deve ter pelo menos 5 caracteres.";
     }
 
-    // Verifica se o e-mail é válido
     if (!formData.email || !invalidEmailRegex.test(formData.email)) {
       newErrors.email = "Por favor, insira um e-mail válido.";
     }
 
-    // Verifica se a senha tem pelo menos 8 caracteres
-    if (formData.password.length < 8) {
+    if (!formData.password || formData.password.length < 8) {
       newErrors.password = "A senha deve ter pelo menos 8 caracteres.";
     }
 
-    // Atualiza os erros no estado
+    if (!isLogin && formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "As senhas não coincidem.";
+    }
+
     setErrors(newErrors);
 
-    // Se não houver erros, envia a mensagem de sucesso e limpa os dados do formulário
     if (Object.keys(newErrors).length === 0) {
       setSuccessMessage(isLogin ? "Login efetuado com sucesso!" : "Cadastro realizado com sucesso!");
-      setFormData({ name: "", email: "", password: "" });
 
-      // Exibe a mensagem de sucesso por 3 segundos
-      setTimeout(() => {
-        if (!isLogin) {
-          setIsLogin(true); // Alterna para a tela de login após cadastro
-        }
-        setSuccessMessage(""); // Limpa a mensagem de sucesso
-      }, 3000);
+      // Limpa o formulário
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
 
-      setIsModalOpen(true); // Abre o modal de sucesso
+      if (!isLogin) {
+        // Se for cadastro, alterna para tela de login
+        setTimeout(() => {
+          setIsModalOpen(false); // Fecha o modal
+          setIsLogin(true); // Altera para login
+          setIsModalOpen(true); // Reabre no modo login
+          setSuccessMessage(""); // Limpa a mensagem
+        }, 2000); // Pequena transição
+      } else {
+        // Para login, apenas limpa o modal e mensagem
+        setTimeout(() => {
+          setSuccessMessage("");
+          setIsModalOpen(false);
+        }, 3000);
+      }
     }
   };
+
+  //Funçã para controlar o botão de mostrar/esconde senha
+  const togglePasswordVisibility=(field)=>{
+    setShowPassword((prev)=>({
+      ...prev,
+      [field]:!prev[field],
+    }))
+  }
 
   return (
     <>
@@ -173,10 +229,14 @@ const NavBar = () => {
       </header>
 
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+        <div
+        className={`fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 transition-opacity duration-500 ${
+          isModalOpen ? "opacity-100 fade-in-down" : "opacity-0 fade-out-up"
+        }`}
+      >
           <div
             ref={modalRef}
-            className="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4 md:mx-0 overflow-hidden flex flex-col md:flex-row relative"
+            className="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4 md:mx-0 overflow-hidden flex flex-col md:flex-row relative animate-fadeInScal"
           >
             <button
               onClick={() => setIsModalOpen(false)}
@@ -216,7 +276,7 @@ const NavBar = () => {
 
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                      Email
+                      E-mail
                     </label>
                     <input
                       autoFocus
@@ -236,7 +296,7 @@ const NavBar = () => {
                     </label>
                     <div className="relative">
                       <input
-                        type={showPassword ? "text" : "password"}
+                        type={showPassword.password ? "text" : "password"}
                         id="password"
                         value={formData.password}
                         onChange={handleChange}
@@ -245,13 +305,39 @@ const NavBar = () => {
                       />
                       <button
                         type="button"
-                        onClick={() => setShowPassword(!showPassword)}
+                        onClick={() => togglePasswordVisibility("password")}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600"
                       >
-                        <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"} text-xl`}></i>
+                        <i className={`fas ${showPassword.password ? "fa-eye-slash" : "fa-eye"} text-xl`}></i>
                       </button>
                     </div>
                     {errors.password && <p className="text-sm text-red-600 mt-1">{errors.password}</p>}
+
+                    {!isLogin && (
+                      <div className="mt-4">
+                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                          Confirmar Senha
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showPassword.confirmPassword ? "text" : "password"}
+                            id="confirmPassword"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            className="mt-1 block w-full px-3 py-2 border text-purple-500 text-bold border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 caret-purple-500"
+                            placeholder="Confirme sua senha"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => togglePasswordVisibility("confirmPassword")}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600"
+                          >
+                            <i className={`fas ${showPassword.confirmPassword ? "fa-eye-slash" : "fa-eye"} text-xl`}></i>
+                          </button>
+                        </div>
+                        {errors.confirmPassword && <p className="text-sm text-red-600 mt-1">{errors.confirmPassword}</p>}
+                      </div>
+                    )}
                   </div>
 
                   <button
