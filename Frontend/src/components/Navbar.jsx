@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import logoSecureFlow from "../assets/logo-secureflow.svg";
 import screenLogin from "../assets/screen-login.svg";
-
+import api from "../service/api";
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -109,8 +109,7 @@ const NavBar = () => {
   };
 
   // Função para validar o formulário antes de envio
-  const validateForm = (e) => {
-    e.preventDefault();
+  const validateForm = () => {
     const newErrors = {};
 
     // Validações para campos
@@ -132,40 +131,52 @@ const NavBar = () => {
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
-      setIsLoading(true); // Ativa o loader
-
-      setTimeout(() => {
-        setIsLoading(false); // Desativa o loader
-        setSuccessMessage(isLogin ? "Login efetuado com sucesso!" : "Cadastro realizado com sucesso!");
-
-        // Limpa o formulário
-        setFormData({
-          name: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-        });
-
-        if (!isLogin) {
-          // Se for cadastro, alterna para tela de login
-          setTimeout(() => {
-            setIsModalOpen(false); // Fecha o modal
-            setIsLogin(true); // Altera para login
-            setIsModalOpen(true); // Reabre no modo login
-            setSuccessMessage(""); // Limpa a mensagem
-          }, 2000); // Pequena transição
-        } else {
-          // Para login, apenas limpa o modal e mensagem
-          setTimeout(() => {
-            setSuccessMessage("");
-            setIsModalOpen(false);
-          }, 3000);
-        }
-      }, 3000);
+    
     }
-  };
-
+  const registerUser = (e) =>{
+    e.preventDefault();
+    validateForm()
+    try {
+      const result = api.post('/administrador',{nome:formData.name,email:formData.email,senha:formData.password})
+      console.log(result);
+      if (Object.keys(errors).length === 0) {
+        setIsLoading(true); // Ativa o loader
+  
+        setTimeout(() => {
+          setIsLoading(false); // Desativa o loader
+          setSuccessMessage(isLogin ? "Login efetuado com sucesso!" : "Cadastro realizado com sucesso!");
+  
+          // Limpa o formulário
+          setFormData({
+            name: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+          });
+  
+          if (!isLogin) {
+            // Se for cadastro, alterna para tela de login
+            setTimeout(() => {
+              setIsModalOpen(false); // Fecha o modal
+              setIsLogin(true); // Altera para login
+              setIsModalOpen(true); // Reabre no modo login
+              setSuccessMessage(""); // Limpa a mensagem
+            }, 2000); // Pequena transição
+          } else {
+            // Para login, apenas limpa o modal e mensagem
+            setTimeout(() => {
+              setSuccessMessage("");
+              setIsModalOpen(false);
+            }, 3000);
+          }
+        }, 3000);
+    }
+    } catch (error) {
+      console.log(error);
+      
+    }
+ 
+}
   //Funçã para controlar o botão de mostrar/esconde senha
   const togglePasswordVisibility = (field) => {
     setShowPassword((prev) => ({
@@ -270,7 +281,7 @@ const NavBar = () => {
                   <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md text-center mb-4">{successMessage}</div>
                 )}
 
-                <form className="space-y-6" onSubmit={validateForm}>
+                <form className="space-y-6" onSubmit={registerUser}>
                   {!isLogin && (
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-gray-700">
