@@ -4,17 +4,13 @@ import com.secureflow.secureflowsystem.model.TabelasSensiveis;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-
+@Repository
 public interface TabelasSensiveisRepository extends JpaRepository<TabelasSensiveis, Long> {
 
     boolean existsByNomeTabela(String nomeTabela);
 
-    @Query(value = "SELECT * FROM tabelas_sensiveis WHERE empresa_id = :empresaId", nativeQuery = true)
-    List<TabelasSensiveis> buscarTabelasPorEmpresa(@Param("empresaId") Long empresaId);
-
-    @Query(value = "SELECT * FROM tabelas_sensiveis WHERE empresa_id = :empresaId AND tabela_id = :tabelaId", nativeQuery = true)
-    Optional<TabelasSensiveis> buscarTabelaPorId(@Param("empresaId") Long empresaId, @Param("tabelaId") Long tabelaId);
+    @Query(value = "SELECT COUNT(*) > 0 FROM tabelas_sensiveis WHERE nome_tabela = :nomeTabela AND tabela_id <> :id", nativeQuery = true)
+    boolean existsByNomeTabelaAndNotId(@Param("nomeTabela") String nomeTabela, @Param("id") Long id);
 }

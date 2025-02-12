@@ -1,9 +1,11 @@
 package com.secureflow.secureflowsystem.controller;
 
-import com.secureflow.secureflowsystem.dto.TabelaDTO;
-import com.secureflow.secureflowsystem.dto.TabelaResponseDTO;
+import com.secureflow.secureflowsystem.dto.tabela.TabelaRequestDTO;
+import com.secureflow.secureflowsystem.dto.tabela.TabelaResponseDTO;
+import com.secureflow.secureflowsystem.dto.tabela.TabelaUpdateDTO;
 import com.secureflow.secureflowsystem.service.TabelasSensiveisService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -12,27 +14,25 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/empresas")
+@RequestMapping("/tabelas")
+@RequiredArgsConstructor
 public class TabelasSensiveisController {
 
-    @Autowired
-    private TabelasSensiveisService service;
+    private final TabelasSensiveisService service;
 
-    @GetMapping("/{empresaId}/tabelas")
-    public ResponseEntity<List<TabelaResponseDTO>> buscarTodos(@PathVariable Long empresaId) {
-        List<TabelaResponseDTO> tabelas = service.buscarTodos(empresaId);
-        return ResponseEntity.ok(tabelas);
+    @GetMapping
+    public ResponseEntity<List<TabelaResponseDTO>> buscarTodos() {
+        return ResponseEntity.ok(service.buscarTodos());
     }
 
-    @GetMapping("/{empresaId}/tabelas/{tabelaId}")
-    public ResponseEntity<TabelaResponseDTO> buscarTabelaId(@PathVariable Long empresaId, @PathVariable Long tabelaId) {
-        TabelaResponseDTO tabela = service.buscarTabelaId(empresaId, tabelaId);
-        return ResponseEntity.ok(tabela);
+    @GetMapping("/{id}")
+    public ResponseEntity<TabelaResponseDTO> buscarTabelaId(@PathVariable Long id) {
+        return ResponseEntity.ok(service.buscarTabelaId(id));
     }
 
-    @PostMapping("/{empresaId}/tabelas")
-    public ResponseEntity<TabelaResponseDTO> criarTabela(@PathVariable Long empresaId, @RequestBody TabelaDTO dto) {
-        TabelaResponseDTO tabela = service.criarTabela(empresaId, dto);
+    @PostMapping
+    public ResponseEntity<TabelaResponseDTO> criarTabela(@Valid @RequestBody TabelaRequestDTO dto) {
+        TabelaResponseDTO tabela = service.criarTabela(dto);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -41,19 +41,14 @@ public class TabelasSensiveisController {
         return ResponseEntity.created(uri).body(tabela);
     }
 
-    @PutMapping("/{empresaId}/tabelas/{tabelaId}")
-    public ResponseEntity<TabelaResponseDTO> atualizarTabela(
-            @PathVariable Long empresaId,
-            @PathVariable Long tabelaId,
-            @RequestBody TabelaDTO dto) {
-
-        TabelaResponseDTO tabela = service.atualizarTabela(empresaId, tabelaId, dto);
-        return ResponseEntity.ok(tabela);
+    @PutMapping("/{id}")
+    public ResponseEntity<TabelaResponseDTO> atualizarTabela(@PathVariable Long id, @Valid @RequestBody TabelaUpdateDTO dto) {
+        return ResponseEntity.ok(service.atualizarTabela(id, dto));
     }
 
-    @DeleteMapping("/{empresaId}/tabelas/{tabelaId}")
-    public ResponseEntity<Void> deletarTabela(@PathVariable Long empresaId, @PathVariable Long tabelaId) {
-        service.deletarTabela(empresaId, tabelaId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarTabela(@PathVariable Long id) {
+        service.deletarTabela(id);
         return ResponseEntity.noContent().build();
     }
 }
