@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import logoSecureFlow from "../assets/logo-secureflow.svg";
 import screenLogin from "../assets/screen-login.svg";
+import { Link } from "react-router-dom";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -193,7 +194,7 @@ const NavBar = () => {
                 <path d="M20 5L30 15L20 25L10 15L20 5Z" stroke="var(--secondary)" strokeWidth="2" />
                 <path d="M20 15L30 25L20 35L10 25L20 15Z" stroke="var(--primary)" strokeWidth="2" />
               </svg>
-              <span className="text-lg md:text-2xl font-bold text-light">SecureFlow</span>
+              <span className="text-lg md:text-2xl font-bold text-light"><Link to='/'>SecureFlow</Link></span>
             </div>
           </a>
           <div
@@ -203,21 +204,22 @@ const NavBar = () => {
             }`}
             style={{ zIndex: 10 }}
           >
-            <a href="#" className="block mx-4 p-3 hover:bg-gray-700 hover:text-secondary transition duration-300 rounded-lg">
+            <Link to='platform' className="block mx-4 p-3 hover:bg-gray-700 hover:text-secondary transition duration-300 rounded-lg">
               Plataforma
-            </a>
-            <a href="#" className="block mx-4 p-3 hover:bg-gray-700 hover:text-secondary transition duration-300 rounded-lg">
-              Soluções
-            </a>
-            <a
-              href="https://secureflow.com/about"
-              className="block mx-4 p-3 hover:bg-gray-700 hover:text-secondary transition duration-300 rounded-lg"
-            >
-              Sobre
-            </a>
-            <a href="#" className="block mx-4 p-3 hover:bg-gray-700 hover:text-secondary transition duration-300 rounded-lg">
-              Contato
-            </a>
+            </Link>
+
+            <Link className="block mx-4 p-3 hover:bg-gray-700 hover:text-secondary transition duration-300 rounded-lg" to='solutions'>
+            Soluções
+            </Link>
+
+            <Link className="block mx-4 p-3 hover:bg-gray-700 hover:text-secondary transition duration-300 rounded-lg" to='about'>
+            Sobre
+            </Link>
+            
+            <Link className="block mx-4 p-3 hover:bg-gray-700 hover:text-secondary transition duration-300 rounded-lg" to='contact'>
+            Contato
+            </Link>
+
           </div>
           <div className="flex items-center gap-4">
             <button onClick={() => setIsModalOpen(true)} className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition">
