@@ -86,7 +86,28 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
+    
 
+       <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>1.7.30</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.hyperledger.fabric-sdk-java</groupId>
+        <artifactId>fabric-sdk-java</artifactId>
+        <version>2.2.0</version>
+    </dependency> 
+
+  
+  <dependency>
+    <groupId>org.hyperledger.fabric-sdk-java</groupId>
+    <artifactId>fabric-gateway</artifactId>
+    <version>2.2.9</version> <!-- Verifique se esta é a versão mais recente -->
+</dependency>
+
+   
     </dependencies>
 
     <build>
@@ -118,5 +139,6 @@
             </plugin>
         </plugins>
     </build>
+
 
 </project>
