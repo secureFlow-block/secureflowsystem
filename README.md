@@ -37,3 +37,13 @@ Tecnologias Usadas
 •	PostgreSQL: Banco de dados relacional.
 •	Maven: Gerenciador de dependências.
 
+
+
+Executar aplicação
+no terminal
+mvn clean install - para instalar dependencias
+mvn spring-boot:run - para subir servidor spring
+
+curl -X GET http://localhost:8081/blockchain/ultimo-hash - Listar todos os endpoints disponíveis na sua aplicação.
+
+execute os endpoints encontrados
