@@ -47,3 +47,16 @@ mvn spring-boot:run - para subir servidor spring
 curl -X GET http://localhost:8081/blockchain/ultimo-hash - Listar todos os endpoints disponíveis na sua aplicação.
 
 execute os endpoints encontrados
+
+curl -X POST http://localhost:8081/blockchain/registrar \
+     -H "Content-Type: application/json" \
+     -d '{
+           "empresaId": 1,
+           "tabelaId": 1,
+           "operadorId": 1,
+           "tipoAlteracao": "INSERÇÃO",
+           "detalhesAlteracao": "Registro de teste na blockchain"
+         }'
+
+
+esse comando acima registra um bloco

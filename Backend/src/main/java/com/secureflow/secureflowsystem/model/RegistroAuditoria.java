@@ -48,22 +48,67 @@ public class RegistroAuditoria {
     }
 
     // Getters e Setters
-    public Long getId() { return id; }
-    public Integer getEmpresaId() { return empresaId; }
-    public Integer getTabelaId() { return tabelaId; }
-    public Integer getOperadorId() { return operadorId; }
-    public String getTipoAlteracao() { return tipoAlteracao; }
-    public String getDetalhesAlteracao() { return detalhesAlteracao; }
-    public LocalDateTime getDataHora() { return dataHora; }
-    public String getHashBlockchain() { return hashBlockchain; }
+    public Long getId() {
+        return id;
+    }
 
-    public void setId(Long id) { this.id = id; }
-    public void setEmpresaId(Integer empresaId) { this.empresaId = empresaId; }
-    public void setTabelaId(Integer tabelaId) { this.tabelaId = tabelaId; }
-    public void setOperadorId(Integer operadorId) { this.operadorId = operadorId; }
-    public void setTipoAlteracao(String tipoAlteracao) { this.tipoAlteracao = tipoAlteracao; }
-    public void setDetalhesAlteracao(String detalhesAlteracao) { this.detalhesAlteracao = detalhesAlteracao; }
-    public void setDataHora(LocalDateTime dataHora) { this.dataHora = dataHora; }
-    public void setHashBlockchain(String hashBlockchain) { this.hashBlockchain = hashBlockchain; }
+    public Integer getEmpresaId() {
+        return empresaId;
+    }
+
+    public Integer getTabelaId() {
+        return tabelaId;
+    }
+
+    public Integer getOperadorId() {
+        return operadorId;
+    }
+
+    public String getTipoAlteracao() {
+        return tipoAlteracao;
+    }
+
+    public String getDetalhesAlteracao() {
+        return detalhesAlteracao;
+    }
+
+    public LocalDateTime getDataHora() {
+        return dataHora;
+    }
+
+    public String getHashBlockchain() {
+        return hashBlockchain;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setEmpresaId(Integer empresaId) {
+        this.empresaId = empresaId;
+    }
+
+    public void setTabelaId(Integer tabelaId) {
+        this.tabelaId = tabelaId;
+    }
+
+    public void setOperadorId(Integer operadorId) {
+        this.operadorId = operadorId;
+    }
+
+    public void setTipoAlteracao(String tipoAlteracao) {
+        this.tipoAlteracao = tipoAlteracao;
+    }
+
+    public void setDetalhesAlteracao(String detalhesAlteracao) {
+        this.detalhesAlteracao = detalhesAlteracao;
+    }
+
+    public void setDataHora(LocalDateTime dataHora) {
+        this.dataHora = dataHora;
+    }
+
+    public void setHashBlockchain(String hashBlockchain) {
+        this.hashBlockchain = hashBlockchain;
+    }
 }
-

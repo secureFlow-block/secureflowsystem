@@ -1,8 +1,6 @@
 package com.secureflow.secureflowsystem.service;
 
 import com.secureflow.secureflowsystem.model.RegistroAuditoria;
-import com.secureflow.secureflowsystem.model.Blockchain;
-import com.secureflow.secureflowsystem.repository.BlockchainRepository;
 import com.secureflow.secureflowsystem.repository.RegistroAuditoriaRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,7 +17,6 @@ import java.util.Optional;
 @Service
 public class BlockchainService {
 
-    private final BlockchainRepository blockchainRepository;
     private final RegistroAuditoriaRepository registroAuditoriaRepository;
 
     @Value("${fabric.network.config}")
@@ -39,8 +36,7 @@ public class BlockchainService {
 
     private static final Logger logger = LoggerFactory.getLogger(BlockchainService.class);
 
-    public BlockchainService(BlockchainRepository blockchainRepository, RegistroAuditoriaRepository registroAuditoriaRepository) {
-        this.blockchainRepository = blockchainRepository;
+    public BlockchainService(RegistroAuditoriaRepository registroAuditoriaRepository) {
         this.registroAuditoriaRepository = registroAuditoriaRepository;
     }
 
@@ -49,27 +45,28 @@ public class BlockchainService {
      * @return O hash do último bloco, ou "Nenhum bloco encontrado" caso a blockchain esteja vazia.
      */
     public String obterUltimoHashBlockchain() {
-        Optional<Blockchain> ultimoBloco = blockchainRepository.findTopByOrderByBlockchainIdDesc();
-        return ultimoBloco.map(Blockchain::getHashBlockchain).orElse("Nenhum bloco encontrado");
+        Optional<RegistroAuditoria> ultimoRegistro = registroAuditoriaRepository.findTopByOrderByIdDesc();
+        return ultimoRegistro.map(RegistroAuditoria::getHashBlockchain).orElse("Nenhum bloco encontrado");
     }
 
-    public Blockchain registrarNoBlockchain(Long registroId, String dados) {
+    public RegistroAuditoria registrarNoBlockchain(RegistroAuditoria registro) {
         // Obtém o hash do último bloco
         String previousHash = obterUltimoHashBlockchain();
 
         // Gera o hash do novo bloco
-        String hash = gerarHash(dados + previousHash);
+        String hash = gerarHash(registro.toString() + previousHash);
 
-        // Cria o bloco com referência ao anterior
-        Blockchain bloco = new Blockchain(registroId, hash, LocalDateTime.now(), "Ativo");
+        // Define o hash no registro
+        registro.setHashBlockchain(hash);
+        registro.setDataHora(LocalDateTime.now());
 
-        // Salva no banco de dados antes de enviar ao blockchain
-        blockchainRepository.save(bloco);
+        // Salva no banco de dados
+        registroAuditoriaRepository.save(registro);
 
-        // Envia o bloco para o blockchain
-        enviarParaBlockchain(bloco);
+        // Envia o bloco para a blockchain
+        enviarParaBlockchain(registro);
 
-        return bloco;
+        return registro;
     }
 
     private String gerarHash(String dados) {
@@ -86,7 +83,7 @@ public class BlockchainService {
         }
     }
 
-    public void enviarParaBlockchain(Blockchain bloco) {
+    public void enviarParaBlockchain(RegistroAuditoria registro) {
         try {
             Path networkConfigFile = Paths.get(networkConfigPath);
             Wallet wallet = Wallets.newFileSystemWallet(Paths.get(walletPath));
@@ -103,28 +100,24 @@ public class BlockchainService {
                 String previousHash = obterUltimoHashBlockchain();
 
                 // Atualizando hash com referência ao anterior
-                String blocoHash = gerarHash(bloco.getHashBlockchain() + previousHash);
-                bloco.setHashBlockchain(blocoHash);
+                String blocoHash = gerarHash(registro.getHashBlockchain() + previousHash);
+                registro.setHashBlockchain(blocoHash);
 
                 contract.submitTransaction("RegistrarAlteracao",
-                        bloco.getRegistroId().toString(),
+                        registro.getId().toString(),
                         blocoHash,
                         previousHash,
-                        bloco.getDataRegistro().toString(),
-                        bloco.getStatus());
+                        registro.getDataHora().toString(),
+                        registro.getTipoAlteracao());
 
-                logger.info("Bloco enviado para a blockchain com sucesso! ID do Registro: {}", bloco.getRegistroId());
+                logger.info("Bloco enviado para a blockchain com sucesso! ID do Registro: {}", registro.getId());
             }
         } catch (Exception e) {
             logger.error("Erro ao enviar bloco para blockchain: ", e);
         }
     }
 
-    public void registrarAlteracao(RegistroAuditoria registro) {
-        // Salvar no banco de dados primeiro
-        registroAuditoriaRepository.save(registro);
-
-        // Criar um novo bloco para registrar a alteração na blockchain
-        registrarNoBlockchain(registro.getId(), registro.toString());
+    public RegistroAuditoria registrarAlteracao(RegistroAuditoria registro) {
+        return registrarNoBlockchain(registro);
     }
 }

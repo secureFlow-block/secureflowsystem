@@ -1,5 +1,6 @@
 package com.secureflow.secureflowsystem.controller;
 
+import com.secureflow.secureflowsystem.model.RegistroAuditoria;
 import com.secureflow.secureflowsystem.service.BlockchainService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,5 +19,11 @@ public class BlockchainController {
     public ResponseEntity<String> obterUltimoHash() {
         String ultimoHash = blockchainService.obterUltimoHashBlockchain();
         return ResponseEntity.ok(ultimoHash);
+    }
+
+    @PostMapping("/registrar")
+    public ResponseEntity<RegistroAuditoria> registrarAlteracao(@RequestBody RegistroAuditoria registroAuditoria) {
+        RegistroAuditoria registroSalvo = blockchainService.registrarAlteracao(registroAuditoria);
+        return ResponseEntity.ok(registroSalvo);
     }
 }
