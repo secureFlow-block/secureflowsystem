@@ -4,11 +4,11 @@ import com.secureflow.secureflowsystem.model.RegistroAuditoria;
 
 import java.time.LocalDateTime;
 
-public record RegistroAuditoriaResponseDTO(Long registroId, Long empresaId, Long tabelaId, Long operadorId,
+public record RegistroAuditoriaResponseDTO(Long registroId, String empresa, String tabela, String operador,
                                            String tipoAlteracao, String detalhesAlteracao, LocalDateTime dataHora,
                                            String hashBlockchain) {
 
     public RegistroAuditoriaResponseDTO(RegistroAuditoria registro) {
-        this(registro.getRegistroId(), registro.getEmpresa().getEmpresaId(), registro.getTabelasSensiveis().getTabelaId(), registro.getOperador().getOperadorId(), registro.getTipoAlteracao(), registro.getDetalhesAlteracao(), registro.getDataHora(), registro.getHashBlockchain());
+        this(registro.getRegistroId(), registro.getEmpresa().getNome(), registro.getTabelasSensiveis().getNomeTabela(), registro.getOperador().getNome(), registro.getTipoAlteracao(), registro.getDetalhesAlteracao(), registro.getDataHora(), registro.getHashBlockchain());
     }
 }
