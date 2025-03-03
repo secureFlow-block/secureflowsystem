@@ -13,7 +13,7 @@ public class BlockchainService {
         String hash = gerarHash(dados);
 
         // Consulta o hash do bloco anterior
-        String previousHash = buscarHashAnterior();
+        buscarHashAnterior();
 
         // Cria o bloco
         Blockchain bloco = new Blockchain();
