@@ -177,6 +177,39 @@ const NavBar = () => {
     }
  
 }
+const loginUser = (e) =>{
+  e.preventDefault();
+  validateForm()
+  try {
+    const result = api.post('/auth/login',{
+      email:formData.email,senha:formData.password})
+    console.log(result);
+    if (Object.keys(errors).length === 0) {
+      setIsLoading(true); // Ativa o loader
+
+      setTimeout(() => {
+        setIsLoading(false); // Desativa o loader
+        setSuccessMessage("Login efetuado com sucesso!");
+
+        // Limpa o formulário
+        setFormData({
+          email: "",
+          password: ""
+        });
+          // Para login, apenas limpa o modal e mensagem
+          setTimeout(() => {
+            setSuccessMessage("");
+            setIsModalOpen(false);
+          }, 3000);
+        
+      }, 3000);
+  }
+  } catch (error) {
+    console.log(error);
+    
+  }
+
+}
   //Funçã para controlar o botão de mostrar/esconde senha
   const togglePasswordVisibility = (field) => {
     setShowPassword((prev) => ({
@@ -281,7 +314,7 @@ const NavBar = () => {
                   <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md text-center mb-4">{successMessage}</div>
                 )}
 
-                <form className="space-y-6" onSubmit={registerUser}>
+                <form className="space-y-6" onSubmit={isLogin ? loginUser: registerUser}>
                   {!isLogin && (
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-gray-700">

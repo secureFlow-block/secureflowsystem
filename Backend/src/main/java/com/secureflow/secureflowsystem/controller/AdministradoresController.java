@@ -6,7 +6,6 @@ import com.secureflow.secureflowsystem.exception.EmailAlreadyExistsException;
 import com.secureflow.secureflowsystem.exception.SenhaInvalidaException;
 import com.secureflow.secureflowsystem.model.Administrador;
 import com.secureflow.secureflowsystem.service.AdministradorService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
