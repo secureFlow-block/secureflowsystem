@@ -1,6 +1,8 @@
 import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
+import Features from "./components/Features";
+import Stats from "./components/Stats";
 import Footer from "./components/Footer";
-import { Outlet } from "react-router-dom";
 import { useEffect } from "react";
 import ScrollTopButton from "./components/ScrollTopButton";
 
@@ -40,13 +42,15 @@ function App() {
       <div>
         <Navbar />
         <main>
-          <Outlet /> 
+          <Hero />
+          <Features />
+          <Stats />
         </main>
-        <div className="blockchain-grid" style={{ position: "relative" }}></div> 
         <ScrollTopButton />
         <Footer />
       </div>
     </section>
+   
   );
 }
 

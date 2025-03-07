@@ -5,25 +5,32 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import App from "./App.jsx";
-import Home from "./routes/Home.jsx";
-import Platform from "./routes/Platform.jsx";
-import Solutions from "./routes/Solutions.jsx";
-import About from "./routes/About.jsx";
-import Contact from "./routes/Contact.jsx";
+import LogAlteracao from "./components/LogAlteracao.jsx";
+import ToggleSidebar from "./ToggleSidebar.jsx";
+import Settings from "./components/Settings.jsx";
+
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <App />, 
+  },
+  {
+    path: "/togglesidebar", 
+    element: <ToggleSidebar />,
     children: [
-      { path: "", element: <Home /> },
-      { path: "platform", element: <Platform /> },
-      { path: "solutions", element: <Solutions /> },
-      { path: "about", element: <About /> },
-      { path: "contact", element: <Contact /> },
+      {
+        path: "logalteracao", 
+        element: <LogAlteracao />,
+      },
+      {
+        path: "settings", 
+        element: <Settings />,
+      },
     ],
   },
 ]);
+
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
