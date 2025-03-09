@@ -33,6 +33,33 @@ ou
 ```bash
 yarn dev
 ```
+
+### Passo 5: Gerenciar rotas com React Router
+```bash
+npm i --save react-router-dom
+```
+ou
+```bash
+yarn add --save react-router-dom
+```
+### Passo 6: Instalação do axios
+```bash
+npm i --save axios
+```
+ou
+```bash
+yarn add --save axios
+```
+
+### Passo 7: Serve para mudar de página e renderizar uma nova página sem carregar toda a aplicação novamente
+```bash
+npm i --save history@5.2.0
+```
+ou
+```bash
+yarn add --save history
+```
+
 #### Isso abrirá o aplicativo React em um servidor local (geralmente na URL http://localhost:5173).
 
 ---

@@ -1,17 +1,23 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import logoSecureFlow from "../assets/logo-secureflow.svg";
 import screenLogin from "../assets/screen-login.svg";
 import api from "../service/api";
+import Login from "./Login";
+import Cadastro from "./Cadastro";
+import { Context } from "../context/authContext";
+import { useNavigate } from "react-router-dom";
+
 const NavBar = () => {
+  const { authenticated } = useContext(Context);
+  console.log(`Situação: ${authenticated}`);
+  const navigate = useNavigate();
+
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showPassword, setShowPassword] = useState({
-    password: false,
-    confirmPassword: false,
-  });
+  const [showPassword, setShowPassword] = useState({ password: false, confirmPassword: false });
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({ login: null, register: null });
   const modalRef = useRef(null);
   const navLinksRef = useRef(null);
   const hamburgerButtonRef = useRef(null);
@@ -20,12 +26,9 @@ const NavBar = () => {
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
-      // Fechar o modal
       if (modalRef.current && !modalRef.current.contains(event.target) && isModalOpen) {
         setIsModalOpen(false);
       }
-
-      // Fechar o menu de navegação (hambúrguer)
       if (
         navLinksRef.current &&
         !navLinksRef.current.contains(event.target) &&
@@ -38,64 +41,68 @@ const NavBar = () => {
     };
 
     const handleScroll = () => {
-      // Fecha o menu ao rolar
       if (isOpen) {
         setIsOpen(false);
       }
     };
 
-    // Adiciona eventos de clique fora e rolagem
     document.addEventListener("mousedown", handleOutsideClick);
     window.addEventListener("scroll", handleScroll);
 
     return () => {
-      // Remove eventos ao desmontar
       document.removeEventListener("mousedown", handleOutsideClick);
       window.removeEventListener("scroll", handleScroll);
     };
   }, [isOpen, isModalOpen]);
-  // Dependências: reexecuta sempre que isOpen ou isModalOpen mudar
 
-  // Função para alternar entre os estados de login e cadastro
   const handleToggleForm = () => {
-    setIsLogin(!isLogin); // Alterna entre login e cadastro
-    setErrors({}); // Limpa os erros de validação
+    setIsLogin(!isLogin);
+    setErrors({});
     setFormData({
       name: "",
       email: "",
       password: "",
       confirmPassword: "",
-    }); // Limpa os dados do formulário
+    });
   };
 
-  // Expressão regular para validar o formato do e-mail
   const invalidEmailRegex = /^[^@]+@[^@]+\.[^@]+$/;
 
-  // Função para lidar com mudanças nos campos do formulário
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value })); // Atualiza os dados do formulário
+    setFormData((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
 
-    // Validação do campo 'name': garante que o nome tenha pelo menos 5 caracteres
     if (id === "name" && value.length >= 5) {
-      setErrors((prev) => ({ ...prev, name: null })); // Limpa o erro se válido
+      setErrors((prev) => ({
+        ...prev,
+        name: null,
+      }));
     }
 
-    // Validação do campo 'email': verifica se o e-mail é válido usando regex
     if (id === "email") {
       if (!invalidEmailRegex.test(value)) {
-        setErrors((prev) => ({ ...prev, email: "O e-mail não pode conter apenas o '@'." })); // Mensagem de erro se inválido
+        setErrors((prev) => ({
+          ...prev,
+          email: "O e-mail não pode conter apenas o '@'.",
+        }));
       } else {
-        setErrors((prev) => ({ ...prev, email: null })); // Limpa o erro se válido
+        setErrors((prev) => ({
+          ...prev,
+          email: null,
+        }));
       }
     }
 
-    // Validação do campo 'password': garante que a senha tenha pelo menos 8 caracteres
     if (id === "password" && value.length >= 8) {
-      setErrors((prev) => ({ ...prev, password: null })); // Limpa o erro se válido
+      setErrors((prev) => ({
+        ...prev,
+        password: null,
+      }));
     }
 
-    // Validação do campo 'confirmPassword': verifica se a senha e a confirmação de senha são iguais
     if (id === "confirmPassword") {
       if (value !== formData.password) {
         setErrors((prev) => ({
@@ -103,16 +110,17 @@ const NavBar = () => {
           confirmPassword: "As senhas não coincidem.",
         }));
       } else {
-        setErrors((prev) => ({ ...prev, confirmPassword: null }));
+        setErrors((prev) => ({
+          ...prev,
+          confirmPassword: null,
+        }));
       }
     }
   };
 
-  // Função para validar o formulário antes de envio
   const validateForm = () => {
     const newErrors = {};
 
-    // Validações para campos
     if (!isLogin && (!formData.name || formData.name.length < 5)) {
       newErrors.name = "O nome deve ter pelo menos 5 caracteres.";
     }
@@ -130,101 +138,85 @@ const NavBar = () => {
     }
 
     setErrors(newErrors);
-
-    
-    }
-  const registerUser = (e) =>{
-    e.preventDefault();
-    validateForm()
-    try {
-      const result = api.post('/administrador',{nome:formData.name,email:formData.email,senha:formData.password})
-      console.log(result);
-      if (Object.keys(errors).length === 0) {
-        setIsLoading(true); // Ativa o loader
-  
-        setTimeout(() => {
-          setIsLoading(false); // Desativa o loader
-          setSuccessMessage(isLogin ? "Login efetuado com sucesso!" : "Cadastro realizado com sucesso!");
-  
-          // Limpa o formulário
-          setFormData({
-            name: "",
-            email: "",
-            password: "",
-            confirmPassword: "",
-          });
-  
-          if (!isLogin) {
-            // Se for cadastro, alterna para tela de login
-            setTimeout(() => {
-              setIsModalOpen(false); // Fecha o modal
-              setIsLogin(true); // Altera para login
-              setIsModalOpen(true); // Reabre no modo login
-              setSuccessMessage(""); // Limpa a mensagem
-            }, 2000); // Pequena transição
-          } else {
-            // Para login, apenas limpa o modal e mensagem
-            setTimeout(() => {
-              setSuccessMessage("");
-              setIsModalOpen(false);
-            }, 3000);
-          }
-        }, 3000);
-    }
-    } catch (error) {
-      console.log(error);
-      
-    }
- 
-}
-const loginUser = (e) =>{
-  e.preventDefault();
-  validateForm()
-  try {
-    const result = api.post('/auth/login',{
-      email:formData.email,senha:formData.password})
-    console.log(result);
-    if (Object.keys(errors).length === 0) {
-      setIsLoading(true); // Ativa o loader
-
-      setTimeout(() => {
-        setIsLoading(false); // Desativa o loader
-        setSuccessMessage("Login efetuado com sucesso!");
-
-        // Limpa o formulário
-        setFormData({
-          email: "",
-          password: ""
-        });
-          // Para login, apenas limpa o modal e mensagem
-          setTimeout(() => {
-            setSuccessMessage("");
-            setIsModalOpen(false);
-          }, 3000);
-        
-      }, 3000);
-  }
-  } catch (error) {
-    console.log(error);
-    
-  }
-
-}
-  //Funçã para controlar o botão de mostrar/esconde senha
-  const togglePasswordVisibility = (field) => {
-    setShowPassword((prev) => ({
-      ...prev,
-      [field]: !prev[field],
-    }));
+    return Object.keys(newErrors).length === 0;
   };
 
-  // Função para lidar com o clique no botão
-  const handleButtonClick = () => {
-    setIsLoading(true); // Ativa o loader
-    setTimeout(() => {
-      setIsLoading(false); // Desativa o loader após 3 segundos
-      setIsModalOpen(true); // Abre o modal (ou realiza outra ação)
-    }, 3000);
+  const registerUser = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    try {
+      const result = await api.post("/administrador", {
+        nome: formData.name,
+        email: formData.email,
+        senha: formData.password,
+      });
+      console.log(result);
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false);
+        setSuccessMessage("Cadastro realizado com sucesso!");
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+        setTimeout(() => {
+          setIsModalOpen(false);
+          setIsLogin(true);
+          setIsModalOpen(true);
+          setSuccessMessage("");
+        }, 2000);
+      }, 3000);
+    } catch (error) {
+      console.log("Erro: Cadastro não efetuado", error);
+      setErrors({
+        ...errors,
+        register: "Erro ao realizar o cadastro. Tente novamente.",
+      });
+    }
+  };
+
+  const loginUser = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    try {
+      const result = await api.post("/auth/login", {
+        email: formData.email,
+        senha: formData.password,
+      });
+      console.log(result);
+      console.log(result.data);
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false);
+        setSuccessMessage("Login efetuado com sucesso!");
+        setFormData({
+          email: "",
+          password: "",
+        });
+        setTimeout(() => {
+          setSuccessMessage("");
+          setIsModalOpen(false);
+          // Salvar o token no localStorage
+          localStorage.setItem("token", JSON.stringify(result.data.token));
+          // api.defaults.headers.common["Authorization"] = `Bearer ${result.data.token}`;
+          api.defaults.headers.Authorization = `Bearer ${result.data.token}`;
+          navigate("/home");
+        }, 3000);
+      }, 3000);
+    } catch (error) {
+      console.log("Erro: Usuário ou senha incorreta", error);
+      if (error.response && error.response.status === 401) {
+        setErrors({ ...errors, login: "Usuário ou senha incorreta." });
+      } else {
+        setErrors({ ...errors, login: "Usuário ou senha incorreta." });
+      }
+    }
+  };
+
+  const togglePasswordVisibility = (field) => {
+    setShowPassword((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
   return (
@@ -242,7 +234,7 @@ const loginUser = (e) =>{
           </a>
           <div
             ref={navLinksRef}
-            className={`nav-links fixed top-14 left-0 right-0 bg-gray-800 text-white w-full h-0 overflow-hidden transition-all duration-300 ease-in-out md:static md:w-auto md:h-auto md:overflow-visible md:flex md:bg-transparent md:text-white ${
+            className={`fixed top-14 left-0 right-0 bg-gray-800 text-white w-full h-0 overflow-hidden transition-all duration-300 ease-in-out md:static md:w-auto md:h-auto md:overflow-visible md:flex md:bg-transparent md:text-white ${
               isOpen ? "h-[200px] top-16" : ""
             }`}
             style={{ zIndex: 10 }}
@@ -295,7 +287,7 @@ const loginUser = (e) =>{
         >
           <div
             ref={modalRef}
-            className="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4 md:mx-0 overflow-hidden flex flex-col md:flex-row relative animate-fadeInScal"
+            className="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4 md:mx-0 overflow-hidden flex flex-col md:flex-row relative animate-fadeInScale"
           >
             <button
               onClick={() => setIsModalOpen(false)}
@@ -309,111 +301,42 @@ const loginUser = (e) =>{
                   <img src={logoSecureFlow} alt="SecureFlow Logo" className="h-12" />
                   <span className="text-2xl font-semibold text-purple-900">SecureFlow</span>
                 </div>
-
                 {successMessage && (
                   <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md text-center mb-4">{successMessage}</div>
                 )}
-
-                <form className="space-y-6" onSubmit={isLogin ? loginUser: registerUser}>
-                  {!isLogin && (
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                        Nome Completo
-                      </label>
-                      <input
-                        autoFocus
-                        type="text"
-                        id="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="mt-1 block w-full px-3 py-2 border text-purple-500 text-bold border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 caret-purple-500"
-                        placeholder="Seu nome completo"
-                      />
-                      {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
-                    </div>
-                  )}
-
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                      E-mail
-                    </label>
-                    <input
-                      autoFocus
-                      type="email"
-                      id="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="mt-1 block w-full px-3 py-2 border text-purple-500 text-bold border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 caret-purple-500"
-                      placeholder="Digite seu email"
-                    />
-                    {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
-                  </div>
-
-                  <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                      Senha
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showPassword.password ? "text" : "password"}
-                        id="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className="mt-1 block w-full px-3 py-2 border text-purple-500 text-bold border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 caret-purple-500"
-                        placeholder="Digite sua senha"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => togglePasswordVisibility("password")}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600"
-                      >
-                        <i className={`fas ${showPassword.password ? "fa-eye-slash" : "fa-eye"} text-xl`}></i>
-                      </button>
-                    </div>
-                    {errors.password && <p className="text-sm text-red-600 mt-1">{errors.password}</p>}
-
-                    {!isLogin && (
-                      <div className="mt-4">
-                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                          Confirmar Senha
-                        </label>
-                        <div className="relative">
-                          <input
-                            type={showPassword.confirmPassword ? "text" : "password"}
-                            id="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            className="mt-1 block w-full px-3 py-2 border text-purple-500 text-bold border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 caret-purple-500"
-                            placeholder="Confirme sua senha"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => togglePasswordVisibility("confirmPassword")}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600"
-                          >
-                            <i className={`fas ${showPassword.confirmPassword ? "fa-eye-slash" : "fa-eye"} text-xl`}></i>
-                          </button>
-                        </div>
-                        {errors.confirmPassword && <p className="text-sm text-red-600 mt-1">{errors.confirmPassword}</p>}
-                      </div>
+                {isLogin ? (
+                  <>
+                    {errors.login && (
+                      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md text-center mb-4">{errors.login}</div>
                     )}
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-2 px-4 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition relative flex items-center justify-center"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? <span className="loader"></span> /* Loader visível */ : isLogin ? "Entrar" : "Cadastrar"}
-                  </button>
-                </form>
-
-                <div className="flex justify-center items-center gap-2 mt-6">
-                  <span className="text-sm text-gray-600">{isLogin ? "Ainda não tem uma conta?" : "Já tem uma conta?"}</span>
-                  <button onClick={handleToggleForm} className="text-sm text-blue-600 hover:text-blue-800">
-                    {isLogin ? "Cadastre-se" : "Login"}
-                  </button>
-                </div>
+                    <Login
+                      onSuccess={loginUser}
+                      onChangeForm={handleToggleForm}
+                      errors={errors}
+                      formData={formData}
+                      handleChange={handleChange}
+                      showPassword={showPassword}
+                      togglePasswordVisibility={togglePasswordVisibility}
+                      isLoading={isLoading}
+                    />
+                  </>
+                ) : (
+                  <>
+                    {errors.register && (
+                      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md text-center mb-4">{errors.register}</div>
+                    )}
+                    <Cadastro
+                      onSuccess={registerUser}
+                      onChangeForm={handleToggleForm}
+                      errors={errors}
+                      formData={formData}
+                      handleChange={handleChange}
+                      showPassword={showPassword}
+                      togglePasswordVisibility={togglePasswordVisibility}
+                      isLoading={isLoading}
+                    />
+                  </>
+                )}
               </div>
             </div>
             <div className="hidden md:block w-1/2">
