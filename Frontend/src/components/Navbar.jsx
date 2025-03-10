@@ -5,12 +5,12 @@ import api from "../service/api";
 import Login from "./Login";
 import Cadastro from "./Cadastro";
 import { Context } from "../context/authContext";
-import { useNavigate } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 
 const NavBar = () => {
   const { authenticated } = useContext(Context);
   console.log(`Situação: ${authenticated}`);
-  const navigate = useNavigate();
+  // Removido useNavigate, usaremos this.props.history.push
 
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -202,7 +202,7 @@ const NavBar = () => {
           localStorage.setItem("token", JSON.stringify(result.data.token));
           // api.defaults.headers.common["Authorization"] = `Bearer ${result.data.token}`;
           api.defaults.headers.Authorization = `Bearer ${result.data.token}`;
-          navigate("/home");
+          this.props.history.push("/home");
         }, 3000);
       }, 3000);
     } catch (error) {

@@ -40,6 +40,12 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.DELETE, "/administrador").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/administrador").permitAll()
+                        
+                        
+                        .requestMatchers(HttpMethod.GET, "/empresas/**").permitAll()
+
+
+                        
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers

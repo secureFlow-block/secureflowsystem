@@ -9,16 +9,16 @@ import Logout from "../assets/image/Logout.png";
 import Profile from "../assets/image/profile.png";
 import { useContext } from "react";
 import { Context } from "../context/authContext";
-import { useNavigate } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import "../index.css";
 
 const Sidebar = ({ onLinkClick }) => {
-  const navigate = useNavigate();
+  // Removido useNavigate, usaremos this.props.history.push
   const { handleLogout } = useContext(Context);
 
   const logOut = () => {
     handleLogout(() => {
-      navigate("/");
+      this.props.history.push("/");
     });
   };
   const [activeLink, setActiveLink] = useState(localStorage.getItem("activeLink") || "");
@@ -163,4 +163,4 @@ Sidebar.propTypes = {
   onLinkClick: PropTypes.func.isRequired,
 };
 
-export default Sidebar;
+export default withRouter(Sidebar);

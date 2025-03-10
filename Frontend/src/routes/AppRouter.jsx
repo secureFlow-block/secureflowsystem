@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import App from "../App";
 import { AuthProvider } from "../context/authContext";
 import Home from "../pages/Home";
@@ -9,11 +9,11 @@ function AppRouter() {
     <div>
       <AuthProvider>
         <Router>
-          <Routes>
+          <Switch>
             <Route exact path="/" element={<App />} />
             <Route exact path="/home" element={<Home />} />
             <Route path="/config" element={<Configuration />} />
-          </Routes>
+          </Switch>
         </Router>
       </AuthProvider>
     </div>

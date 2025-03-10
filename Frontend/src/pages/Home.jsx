@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useContext } from "react";
 import { Context } from "../context/authContext";
-import { useNavigate } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import Header from "./Header";
 
 
@@ -10,12 +10,12 @@ export default function Home() {
   const [breadcrumb, setBreadcrumb] = useState("Dashboard");
 
 
-  const navigate = useNavigate();
+  // Removido useNavigate, usaremos this.props.history.push
   const { handleLogout } = useContext(Context);
 
   const logout = () => {
     handleLogout(() => {
-      navigate("/");
+      this.props.history.push("/");
     });
   };
 
