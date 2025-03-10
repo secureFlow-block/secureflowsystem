@@ -36,6 +36,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/administrador/{id}").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/administrador/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/administrador/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/administrador/**").permitAll()
+
+                        .requestMatchers(HttpMethod.DELETE, "/administrador").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/administrador").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
