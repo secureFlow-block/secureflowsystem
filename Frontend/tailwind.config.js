@@ -11,7 +11,16 @@ export default {
         secondary: '#10b981',
         dark: '#1f2937',
         light: '#f3f4f6',
-        lightGray:'#37404d'
+        lightGray:'#37404d',
+        sidebar: '#2d1b4d'
+      },
+      background:{
+        primary: '#6d28d9',
+        secondary: '#10b981',
+        dark: '#1f2937',
+        light: '#f3f4f6',
+        lightGray:'#37404d',
+        sidebar: '#2d1b4d'
       },
       zIndex:{
         '100':100,

@@ -34,7 +34,7 @@ const AuthProvider = ({ children }) => {
   }
   //Função para sair
   const handleLogout = (onLogout) => {
-    // console.log("Sair")
+    console.log("Sair")
     localStorage.removeItem("token");
     setAuthenticated(false);
     // Redirecionar para a tela de login
