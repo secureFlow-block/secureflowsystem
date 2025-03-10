@@ -33,11 +33,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/administrador").permitAll()
                         .requestMatchers(HttpMethod.GET, "/administrador").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/administrador/{id}").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/administrador/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/administrador/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/administrador/**").permitAll()
 
                         .requestMatchers(HttpMethod.DELETE, "/administrador").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/administrador").permitAll()
-
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
