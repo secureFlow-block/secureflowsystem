@@ -22,38 +22,35 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/administrador").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/administrador").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/administrador/{id}").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/administrador/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/administrador/{id}").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/administrador/**").permitAll()
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http.cors(Customizer.withDefaults())
+        .csrf(csrf -> csrf.disable())
+        .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/swagger-ui/**").permitAll()
+            .requestMatchers("/v3/api-docs/**").permitAll()
+            .requestMatchers("/h2-console/**").permitAll()
+            .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/empresas").permitAll()
+            .requestMatchers(HttpMethod.POST, "/empresas").permitAll()
+            .requestMatchers(HttpMethod.GET, "/empresas/**").permitAll()
+            .requestMatchers(HttpMethod.PUT, "/empresas/**").permitAll()
+            .requestMatchers(HttpMethod.DELETE, "/empresas/**").permitAll()
 
-                        .requestMatchers(HttpMethod.DELETE, "/administrador").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/administrador").permitAll()
-                        
-                        
-                        .requestMatchers(HttpMethod.GET, "/empresas/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/registros").permitAll()
+.requestMatchers(HttpMethod.POST, "/registros").permitAll()
+.requestMatchers(HttpMethod.GET, "/registros/**").permitAll()
+.requestMatchers(HttpMethod.PUT, "/registros/**").permitAll()
+.requestMatchers(HttpMethod.DELETE, "/registros/**").permitAll()
 
+            .anyRequest().authenticated()
+        )
+        .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-                        
-                        .anyRequest().authenticated()
-                )
-                .headers(headers -> headers
-                        .frameOptions(frame -> frame.disable()))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    return http.build();
+}
 
-        return http.build();
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {

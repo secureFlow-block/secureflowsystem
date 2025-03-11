@@ -8,9 +8,18 @@ import java.util.Optional;
 @Repository
 public interface BlockchainRepository extends JpaRepository<Blockchain, Long> {
     
-    // Método existente
-    Blockchain findByRegistroId(Long registroId);
+    /**
+     * Busca um registro específico da blockchain associado a um ID de auditoria.
+     * 
+     * @param registroId O ID do registro de auditoria associado.
+     * @return O bloco correspondente na blockchain.
+     */
+    Optional<Blockchain> findByRegistroId(Long registroId);
 
-    // Novo método para obter o último bloco registrado na blockchain
+    /**
+     * Obtém o último bloco registrado na blockchain com base no ID mais alto.
+     * 
+     * @return O bloco mais recente registrado.
+     */
     Optional<Blockchain> findTopByOrderByBlockchainIdDesc();
 }

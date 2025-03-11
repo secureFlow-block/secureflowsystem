@@ -20,9 +20,6 @@ public record RegistroAuditoriaRequestDTO(
         String tipoAlteracao,
 
         @NotBlank(message = "Os detalhes da alteração não podem estar em branco.")
-        String detalhesAlteracao,
-
-        @NotBlank(message = "O hash da blockchain não pode estar em branco.")
-        String hashBlockchain
+        String detalhesAlteracao
 
 ) {}

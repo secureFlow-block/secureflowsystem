@@ -1,44 +1,46 @@
 package com.secureflow.secureflowsystem.service;
 
 import com.secureflow.secureflowsystem.model.Blockchain;
+import com.secureflow.secureflowsystem.repository.BlockchainRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class BlockchainService {
 
-    public Blockchain registrarNoBlockchain(Long registroId, String dados) {
-        // Gera o hash do bloco
-        String hash = gerarHash(dados);
+    private final BlockchainRepository blockchainRepository;
 
-        // Consulta o hash do bloco anterior
-        buscarHashAnterior();
+    @Transactional
+    public boolean registrarNoBlockchain(Long registroId, String hashBlockchain, String tipoAlteracao) {
+        System.out.println("🔗 Registrando no Blockchain...");
 
-        // Cria o bloco
+        // 🔹 Obtendo o hash do bloco anterior
+        String hashAnterior = buscarHashAnterior();
+
+        // 🔹 Criando o novo bloco
         Blockchain bloco = new Blockchain();
         bloco.setRegistroId(registroId);
-        bloco.setHashBlockchain(hash);
+        bloco.setHashBlockchain(hashBlockchain);
         bloco.setDataRegistro(LocalDateTime.now());
         bloco.setStatus("Ativo");
 
-        // Envia o bloco para o serviço de blockchain externo
-        enviarParaBlockchain(bloco);
-
-        return bloco;
-    }
-
-    private String gerarHash(String dados) {
-        // Implementação de geração de hash (ex.: SHA-256)
-        return "hash_calculado";
+        // 🔹 Salvando no banco de dados
+        blockchainRepository.save(bloco);
+        
+        System.out.println("✅ Bloco registrado no Blockchain com hash: " + hashBlockchain);
+        return true;
     }
 
     private String buscarHashAnterior() {
-        // Busca o último hash registrado no serviço de blockchain
-        return "hash_anterior";
-    }
-
-    private void enviarParaBlockchain(Blockchain bloco) {
-        // Lógica para integrar com a API externa
+        Optional<Blockchain> ultimoBloco = blockchainRepository.findTopByOrderByBlockchainIdDesc();
+        return ultimoBloco.map(Blockchain::getHashBlockchain).orElse("GENESIS");
     }
 }

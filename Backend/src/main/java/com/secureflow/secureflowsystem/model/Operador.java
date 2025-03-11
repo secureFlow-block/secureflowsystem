@@ -13,6 +13,7 @@ public class Operador {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "operadorid") // Ajuste para o nome correto no banco
     private Long operadorId;
 
     @Column(nullable = false, length = 100)
@@ -25,6 +26,6 @@ public class Operador {
     private String cargo;
 
     @ManyToOne
-    @JoinColumn(name = "empresa_id", nullable = false)
-    private Empresa empresa;
+@JoinColumn(name = "empresaid", nullable = false) // Nome correto da coluna no banco
+private Empresa empresa;
 }

@@ -12,10 +12,14 @@ import com.secureflow.secureflowsystem.repository.EmpresaRepository;
 import com.secureflow.secureflowsystem.repository.OperadorRepository;
 import com.secureflow.secureflowsystem.repository.RegistroAuditoriaRepository;
 import com.secureflow.secureflowsystem.repository.TabelasSensiveisRepository;
+import com.secureflow.secureflowsystem.service.BlockchainService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -26,7 +30,7 @@ public class RegistroAuditoriaService {
     private final EmpresaRepository empresaRepository;
     private final TabelasSensiveisRepository tabelasSensiveisRepository;
     private final OperadorRepository operadorRepository;
-
+    private final BlockchainService blockchainService;
 
     @Transactional(readOnly = true)
     public List<RegistroAuditoriaResponseDTO> buscarTodos() {
@@ -52,15 +56,30 @@ public class RegistroAuditoriaService {
         Operador operador = operadorRepository.findById(dto.operadorId())
                 .orElseThrow(() -> new ResourceNotFoundException("Operador não encontrado."));
 
-        RegistroAuditoria registro = new RegistroAuditoria();
-        registro.setEmpresa(empresa);
-        registro.setTabelasSensiveis(tabela);
-        registro.setOperador(operador);
-        registro.setTipoAlteracao(dto.tipoAlteracao());
-        registro.setDetalhesAlteracao(dto.detalhesAlteracao());
-        registro.setHashBlockchain(dto.hashBlockchain());
+        try {
+            // 🔹 1. Gerar Hash automaticamente
+            String hashBlockchain = gerarHash(dto.detalhesAlteracao() + LocalDateTime.now());
 
-        return new RegistroAuditoriaResponseDTO(registroRepository.save(registro));
+            // 🔹 2. Registrar no Blockchain
+            boolean sucesso = blockchainService.registrarNoBlockchain(dto.tabelaId(), hashBlockchain, dto.tipoAlteracao());
+
+            if (sucesso) {
+                // 🔹 3. Criar e salvar o registro na auditoria
+                RegistroAuditoria registro = new RegistroAuditoria();
+                registro.setEmpresa(empresa);
+                registro.setTabelasSensiveis(tabela);
+                registro.setOperador(operador);
+                registro.setTipoAlteracao(dto.tipoAlteracao());
+                registro.setDetalhesAlteracao(dto.detalhesAlteracao());
+                registro.setHashBlockchain(hashBlockchain);
+
+                return new RegistroAuditoriaResponseDTO(registroRepository.save(registro));
+            } else {
+                throw new RuntimeException("Erro ao registrar no Blockchain.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao processar o registro: " + e.getMessage());
+        }
     }
 
     @Transactional
@@ -68,11 +87,26 @@ public class RegistroAuditoriaService {
         RegistroAuditoria registro = registroRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Registro não encontrado."));
 
-        registro.setTipoAlteracao(dto.tipoAlteracao());
-        registro.setDetalhesAlteracao(dto.detalhesAlteracao());
-        registro.setHashBlockchain(dto.hashBlockchain());
+        try {
+            // 🔹 1. Gerar novo Hash
+            String hashBlockchain = gerarHash(dto.detalhesAlteracao() + LocalDateTime.now());
 
-        return new RegistroAuditoriaResponseDTO(registroRepository.save(registro));
+            // 🔹 2. Atualizar no Blockchain
+            boolean sucesso = blockchainService.registrarNoBlockchain(id, hashBlockchain, dto.tipoAlteracao());
+
+            if (sucesso) {
+                // 🔹 3. Atualizar no Banco
+                registro.setTipoAlteracao(dto.tipoAlteracao());
+                registro.setDetalhesAlteracao(dto.detalhesAlteracao());
+                registro.setHashBlockchain(hashBlockchain);
+
+                return new RegistroAuditoriaResponseDTO(registroRepository.save(registro));
+            } else {
+                throw new RuntimeException("Erro ao atualizar no Blockchain.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao processar atualização: " + e.getMessage());
+        }
     }
 
     @Transactional
@@ -81,5 +115,16 @@ public class RegistroAuditoriaService {
             throw new ResourceNotFoundException("Registro não encontrado.");
         }
         registroRepository.deleteById(id);
+    }
+
+    // 🔹 Método para gerar Hash SHA-256
+    private String gerarHash(String input) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hashBytes = digest.digest(input.getBytes());
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hashBytes) {
+            hexString.append(String.format("%02x", b));
+        }
+        return hexString.toString();
     }
 }
