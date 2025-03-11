@@ -97,10 +97,10 @@ curl -X GET "http://localhost:8081/blockchain/consultar?empresaId=1"
 ## 🔗 Links Importantes
 
 - 📌 **Trello (Gerenciamento de Tarefas):**  
-  [🔗 Acesse aqui](#)
+  [🔗 Acesse aqui](https://trello.com/invite/b/675a192a5f49ebc9d6cb9c26/ATTI32e4abe2cecb62022a3b3c3358f7e96fD1E2BF47/secureflow)
 
 - 📌 **Figma (Design e Protótipos):**  
-  [🔗 Acesse aqui](#)
+  [🔗 Acesse aqui]( https://www.figma.com/design/4iJVbSOEmqkOStPt159XIi/SecureFlow---Blockchain?node-id=9-13&t=kovG9SEAWpzYc58X-0)
 
 ---
 
